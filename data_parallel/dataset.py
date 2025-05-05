@@ -21,7 +21,6 @@ class Partition():
 class DataPartitioner():
     def __init__(self, data, sizes=[0.7, 0.2, 0.1], seed=1234):
         assert sum(sizes) == 1, "Sizes must sum to 1"
-        print("sizes: ", sizes)
         self.data = data
         self.partitions = []
         rng = Random()
@@ -33,8 +32,8 @@ class DataPartitioner():
         indices = list(range(len(self.data)))
         rng.shuffle(indices)        
         for size in sizes:
-            self.partitions.append(indices[:int(size * len(indices))])
-            indices = indices[int(size * len(indices)):]
+            self.partitions.append(indices[:int(size * len(self.data))])
+            indices = indices[int(size * len(self.data)):]
         print([len(p) for p in self.partitions])
 
 
