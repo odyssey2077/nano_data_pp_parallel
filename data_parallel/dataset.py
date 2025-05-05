@@ -21,6 +21,7 @@ class Partition():
 class DataPartitioner():
     def __init__(self, data, sizes=[0.7, 0.2, 0.1], seed=1234):
         assert sum(sizes) == 1, "Sizes must sum to 1"
+        print("sizes: ", sizes)
         self.data = data
         self.partitions = []
         rng = Random()
