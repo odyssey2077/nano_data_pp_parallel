@@ -34,6 +34,7 @@ class DataPartitioner():
         for size in sizes:
             self.partitions.append(indices[:int(size * len(indices))])
             indices = indices[int(size * len(indices)):]
+        print([len(p) for p in self.partitions])
 
 
     def use(self, partition):
