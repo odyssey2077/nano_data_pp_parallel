@@ -204,5 +204,4 @@ if __name__ == '__main__':
         processes.append(p)
     for p in processes:
         p.join()
-    dist.destroy_process_group()
     # END SOLUTION
