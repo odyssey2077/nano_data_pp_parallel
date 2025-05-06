@@ -70,7 +70,7 @@ class Pipe(nn.Module):
         # BEGIN SOLUTION
         batch_size = x.size(0)
         num_microbatches = math.ceil(batch_size / self.split_size)
-        batches = x.chunk(num_microbatches, dim=0)
+        batches = list(x.chunk(num_microbatches, dim=0))
         self.schedule = _clock_cycles(len(batches), len(self.partitions))
         for schedule in self.schedule:
             self.compute(batches, schedule)
