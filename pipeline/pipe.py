@@ -95,6 +95,7 @@ class Pipe(nn.Module):
 
         # BEGIN SOLUTION
         for mb_index, partition in schedule:
+            print("executing task", mb_index, partition, partitions[partition], batches[mb_index].shape, batches[mb_index].device)
             task = Task(lambda: partitions[partition](batches[mb_index].to(devices[partition])))
             self.in_queues[partition].put(task)
 
