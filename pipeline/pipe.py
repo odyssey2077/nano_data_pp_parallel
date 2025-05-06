@@ -28,22 +28,19 @@ def _clock_cycles(num_batches: int, num_partitions: int) -> Iterable[List[Tuple[
     This function should yield schedules for each clock cycle.
     '''
     # BEGIN SOLUTION
-    schedule = []
+    schedule = [(0, 0)]
     while True:
-        if len(schedule) == 0:
-            schedule.append((0, 0))
-        elif len(schedule) == 1:
-            assert schedule[0][0] == num_batches-1 and schedule[0][1] == num_partitions-1
-            yield schedule
+        yield schedule
+        if len(schedule) == 1 and schedule[0] == (num_batches - 1, num_partitions - 1):
             break
         else:
-            schedule = []
+            next_schedule = []
             for i, j in schedule:
                 if j == 0 and i < num_batches - 1:
-                    schedule.append((i+1, 0))
+                    next_schedule.append((i+1, 0))
                 if j < num_partitions - 1:
-                    schedule.append((i, j+1))
-        yield schedule
+                    next_schedule.append((i, j+1))
+            schedule = next_schedule
     # END SOLUTION
 
 class Pipe(nn.Module):

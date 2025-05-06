@@ -32,6 +32,69 @@ def test_clock_cycles_1():
     for schedule in _clock_cycles(m, n):
         assert sorted(schedule) == sorted(next(gold_schedule))
 
+
+# Test cases using pytest parameterization
+@pytest.mark.a4_2_1
+@pytest.mark.parametrize(
+    "num_batches, num_partitions, expected_schedules",
+    [
+        (1, 1, [
+            [(0, 0)]
+        ]),
+        (2, 2, [
+            [(0, 0)],
+            [(1, 0), (0, 1)],
+            [(1, 1)]
+        ]),
+        (3, 3, [
+            [(0, 0)],
+            [(1, 0), (0, 1)],
+            [(2, 0), (1, 1), (0, 2)],
+            [(2, 1), (1, 2)],
+            [(2, 2)]
+        ]),
+        (1, 3, [
+            [(0, 0)],
+            [(0, 1)],
+            [(0, 2)]
+        ]),
+        (3, 1, [
+            [(0, 0)],
+            [(1, 0)],
+            [(2, 0)]
+        ]),
+        (2, 3, [
+            [(0, 0)],
+            [(1, 0), (0, 1)],
+            [(1, 1), (0, 2)],
+            [(1, 2)]
+        ]),
+        (3, 2, [
+            [(0, 0)],
+            [(1, 0), (0, 1)],
+            [(2, 0), (1, 1)],
+            [(2, 1)]
+        ]),
+    ]
+)
+def test_clock_cycles(num_batches, num_partitions, expected_schedules):
+    """
+    Tests the _clock_cycles function against known correct outputs for various inputs.
+    """
+    generated_schedules = list(_clock_cycles(num_batches, num_partitions))
+
+    # It's important to sort the inner lists (schedules) before comparison
+    # because the order of tuples within a schedule might not be guaranteed
+    # by the function's logic, but the set of tasks in a clock cycle should match.
+    sorted_generated = [sorted(schedule) for schedule in generated_schedules]
+    sorted_expected = [sorted(schedule) for schedule in expected_schedules]
+
+    assert sorted_generated == sorted_expected, \
+        f"For batches={num_batches}, partitions={num_partitions}:\n" \
+        f"Expected: {sorted_expected}\n" \
+        f"Got: {sorted_generated}"
+
+
 @pytest.mark.a4_2_1
 def test_split_module_0():
     model = nn.Sequential(
