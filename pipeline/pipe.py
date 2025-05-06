@@ -73,6 +73,7 @@ class Pipe(nn.Module):
         num_microbatches = math.ceil(batch_size / self.split_size)
         batches = list(x.chunk(num_microbatches, dim=0))
         self.schedule = list(_clock_cycles(len(batches), len(self.partitions)))
+        print("self.schedule", self.schedule)
         for schedule in self.schedule:
             self.compute(batches, schedule)
             print("batches shape:", [batch.shape for batch in batches])
@@ -103,6 +104,7 @@ class Pipe(nn.Module):
                 print(f"Error in partition {partition}")
                 print(result)
             else:
+                print("task info", mb_index, partition, result[1].shape)
                 batches[mb_index] = result[1]
         # END SOLUTION
 
