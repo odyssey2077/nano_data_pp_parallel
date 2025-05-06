@@ -105,7 +105,7 @@ class Pipe(nn.Module):
                 print(f"Error in partition {partition}")
                 print(result)
             else:
-                print("task info", mb_index, partition, result[0], result[1].shape)
+                print("task info", mb_index, partition, result[0], result[1].shape, result[1].device)
                 batches[mb_index] = result[1]
         # END SOLUTION
 
