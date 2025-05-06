@@ -100,7 +100,7 @@ class Pipe(nn.Module):
             self.in_queues[partition].put(task)
 
         for mb_index, partition in schedule:
-            succeed, result = self.out_queues[partition].get()
+            succeed, result = self.out_queues[partition].get(block=True)
             if not succeed:
                 print(f"Error in partition {partition}")
                 print(result)
