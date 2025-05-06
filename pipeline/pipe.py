@@ -71,7 +71,8 @@ class Pipe(nn.Module):
         batch_size = x.size(0)
         num_microbatches = math.ceil(batch_size / self.split_size)
         batches = list(x.chunk(num_microbatches, dim=0))
-        self.schedule = _clock_cycles(len(batches), len(self.partitions))
+        self.schedule = list(_clock_cycles(len(batches), len(self.partitions)))
+        print("self.schedule", self.schedule)
         for schedule in self.schedule:
             self.compute(batches, schedule)
         return torch.cat(batches, dim=0)
