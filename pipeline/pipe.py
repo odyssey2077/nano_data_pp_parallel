@@ -53,6 +53,7 @@ class Pipe(nn.Module):
 
         self.split_size = int(split_size)
         self.partitions, self.devices = _split_module(module)
+        print("self.partitions", self.partitions)
         (self.in_queues, self.out_queues) = create_workers(self.devices)
 
     # ASSIGNMENT 4.2
@@ -72,7 +73,6 @@ class Pipe(nn.Module):
         num_microbatches = math.ceil(batch_size / self.split_size)
         batches = list(x.chunk(num_microbatches, dim=0))
         self.schedule = list(_clock_cycles(len(batches), len(self.partitions)))
-        print("self.schedule", self.schedule)
         for schedule in self.schedule:
             self.compute(batches, schedule)
             print("batches shape:", [batch.shape for batch in batches])
@@ -97,7 +97,7 @@ class Pipe(nn.Module):
             task = Task(lambda: partitions[partition](batches[mb_index].to(devices[partition])))
             self.in_queues[partition].put(task)
 
-        for _, partition in schedule:
+        for mb_index, partition in schedule:
             succeed, result = self.out_queues[partition].get()
             if not succeed:
                 print(f"Error in partition {partition}")
