@@ -90,8 +90,8 @@ def create_workers(devices: List[torch.device],) -> Tuple[List[InQueue], List[Ou
         try:
             in_queue, out_queue = workers[device]
         except KeyError:
-            in_queue = Queue(maxsize=1)
-            out_queue = Queue(maxsize=1)
+            in_queue = Queue()
+            out_queue = Queue()
             workers[device] = (in_queue, out_queue)
 
             t = Thread(target=worker, args=(in_queue, out_queue, device), daemon=True,)
