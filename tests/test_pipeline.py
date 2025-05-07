@@ -131,9 +131,9 @@ def test_forward_0(batch_size, split_size):
     # update first layer to be all 2, second layer to be all 3
     model = nn.Sequential(
         nn.Linear(3, 4).to('cuda:0'),
-        WithDevice(nn.Sigmoid(), 'cuda:0'),
+        WithDevice(nn.Identity(), 'cuda:0'),
         nn.Linear(4, 5).to('cuda:0'),
-        WithDevice(nn.Sigmoid(), 'cuda:0'),
+        WithDevice(nn.Identity(), 'cuda:0'),
     )
     model[0].weight.data.fill_(2)
     model[0].bias.data.fill_(0)
