@@ -98,7 +98,8 @@ class Pipe(nn.Module):
         for mb_index, partition in schedule:
             batches[mb_index] = batches[mb_index].to(devices[partition])
             print("executing task", mb_index, partition, partitions[partition], batches[mb_index].shape, batches[mb_index].device, self.in_queues[partition], self.out_queues[partition], batches[mb_index], id(batches[mb_index]))
-            task = Task(lambda: partitions[partition](batches[mb_index]))
+            data = batches[mb_index].clone()
+            task = Task(lambda: partitions[partition](data))
             self.in_queues[partition].put(task)
             if partition == 1:
                 while self.in_queues[partition].qsize() > 0:
