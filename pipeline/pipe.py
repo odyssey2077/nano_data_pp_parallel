@@ -100,9 +100,8 @@ class Pipe(nn.Module):
             print("executing task", mb_index, partition, partitions[partition], batches[mb_index].shape, batches[mb_index].device, self.in_queues[partition], self.out_queues[partition], batches[mb_index], id(batches[mb_index]))
             task = Task(lambda: partitions[partition](batches[mb_index]))
             self.in_queues[partition].put(task)
-            if partition == 1:
-                while self.in_queues[partition].qsize() > 0:
-                    continue
+            while self.in_queues[partition].qsize() > 0:
+                continue
 
         for mb_index, partition in schedule:
             succeed, result = self.out_queues[partition].get()
