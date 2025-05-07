@@ -126,7 +126,7 @@ def test_split_module_1():
 # @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
 # @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
 @pytest.mark.parametrize("batch_size", [16])
-@pytest.mark.parametrize("split_size", [16])
+@pytest.mark.parametrize("split_size", [8])
 def test_forward_0(batch_size, split_size):
     model = nn.Sequential(
         nn.Linear(3, 4).to('cuda:0'),

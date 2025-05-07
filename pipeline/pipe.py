@@ -7,7 +7,7 @@ import torch.autograd
 import torch.cuda
 from .worker import Task, create_workers
 from .partition import _split_module
-
+import time
 # ASSIGNMENT 4.2
 def _clock_cycles(num_batches: int, num_partitions: int) -> Iterable[List[Tuple[int, int]]]:
     '''Generate schedules for each clock cycle.
@@ -100,6 +100,7 @@ class Pipe(nn.Module):
             print("executing task", mb_index, partition, partitions[partition], batches[mb_index].shape, batches[mb_index].device, self.in_queues[partition], self.out_queues[partition])
             task = Task(lambda: partitions[partition](batches[mb_index]))
             self.in_queues[partition].put(task)
+            time.sleep(1)
 
         for mb_index, partition in schedule:
             succeed, result = self.out_queues[partition].get()
