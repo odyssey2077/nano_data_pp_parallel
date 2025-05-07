@@ -78,8 +78,7 @@ class Pipe(nn.Module):
         print("self.schedule", self.schedule)
         for schedule in self.schedule:
             self.compute(batches, schedule)
-            print("batches shape:", [batch.shape for batch in batches])
-        return torch.cat(batches, dim=0)
+        return torch.cat(list(batches.values()), dim=0)
         # END SOLUTION
 
     # ASSIGNMENT 4.2
