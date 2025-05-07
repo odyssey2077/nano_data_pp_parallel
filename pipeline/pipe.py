@@ -73,12 +73,11 @@ class Pipe(nn.Module):
         batch_size = x.size(0)
         num_microbatches = math.ceil(batch_size / self.split_size)
         batches = list(x.chunk(num_microbatches, dim=0))
-        batches = {i: batch for i, batch in enumerate(batches)}
         self.schedule = list(_clock_cycles(len(batches), len(self.partitions)))
         print("self.schedule", self.schedule)
         for schedule in self.schedule:
             self.compute(batches, schedule)
-        return torch.cat(list(batches.values()), dim=0)
+        return torch.cat(batches, dim=0)
         # END SOLUTION
 
     # ASSIGNMENT 4.2
@@ -97,11 +96,12 @@ class Pipe(nn.Module):
         # BEGIN SOLUTION
         for mb_index, partition in schedule:
             print("batches: ", batches)
+            cur_batch = batches[mb_index]
+            cur_partition = partitions[partition]
             batches[mb_index] = batches[mb_index].to(devices[partition])
             print("executing task", mb_index, partition, partitions[partition], batches[mb_index].shape, batches[mb_index].device, self.in_queues[partition], self.out_queues[partition], batches[mb_index], id(batches[mb_index]))
-            task = Task(lambda: partitions[partition](batches[mb_index]))
+            task = Task(lambda: cur_partition(cur_batch))
             self.in_queues[partition].put(task)
-            time.sleep(0.1) 
 
 
         for mb_index, partition in schedule:
