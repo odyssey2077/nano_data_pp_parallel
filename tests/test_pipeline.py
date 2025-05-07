@@ -125,20 +125,29 @@ def test_split_module_1():
 @pytest.mark.a4_2_2
 @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
 @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+# @pytest.mark.parametrize("batch_size", [16])
+# @pytest.mark.parametrize("split_size", [8])
 def test_forward_0(batch_size, split_size):
+    # update first layer to be all 2, second layer to be all 3
     model = nn.Sequential(
         nn.Linear(3, 4).to('cuda:0'),
-        WithDevice(nn.Sigmoid(), 'cuda:0'),
+        WithDevice(nn.Identity(), 'cuda:0'),
         nn.Linear(4, 5).to('cuda:0'),
-        WithDevice(nn.Sigmoid(), 'cuda:0'),
+        WithDevice(nn.Identity(), 'cuda:0'),
     )
-    
-    x = torch.randn(batch_size, 3).to('cuda:0')
+    model[0].weight.data.fill_(2)
+    model[0].bias.data.fill_(0)
+    model[2].weight.data.fill_(3)
+    model[2].bias.data.fill_(0)
+    model[0].to('cuda:0')
+    model[2].to('cuda:0')
+    # update x to be all 1
+    x = torch.ones(batch_size, 3).to('cuda:0')
     y0 = model(x).to('cpu')
 
     # move the last two layer to another device
     model[-2] = model[-2].to('cuda:1')
-    model[-1] = WithDevice(nn.Sigmoid(), 'cuda:1')
+    model[-1] = WithDevice(nn.Identity(), 'cuda:1')
     pipe = Pipe(model, split_size=split_size)
     y1 = pipe(x).to('cpu')
     assert torch.allclose(y0, y1)
