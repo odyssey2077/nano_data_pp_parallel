@@ -147,7 +147,7 @@ def test_forward_0(batch_size, split_size):
 
     # move the last two layer to another device
     model[-2] = model[-2].to('cuda:1')
-    model[-1] = WithDevice(nn.Sigmoid(), 'cuda:1')
+    model[-1] = WithDevice(nn.Identity(), 'cuda:1')
     pipe = Pipe(model, split_size=split_size)
     y1 = pipe(x).to('cpu')
     assert torch.allclose(y0, y1)
