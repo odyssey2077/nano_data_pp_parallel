@@ -53,8 +53,6 @@ class Pipe(nn.Module):
 
         self.split_size = int(split_size)
         self.partitions, self.devices = _split_module(module)
-        print("self.partitions", self.partitions)
-        print("self.devices", self.devices)
         (self.in_queues, self.out_queues) = create_workers(self.devices)
 
     # ASSIGNMENT 4.2
@@ -74,7 +72,6 @@ class Pipe(nn.Module):
         num_microbatches = math.ceil(batch_size / self.split_size)
         batches = list(x.chunk(num_microbatches, dim=0))
         self.schedule = list(_clock_cycles(len(batches), len(self.partitions)))
-        print("self.schedule", self.schedule)
         for schedule in self.schedule:
             self.compute(batches, schedule)
         return torch.cat(batches, dim=0)
@@ -95,11 +92,9 @@ class Pipe(nn.Module):
 
         # BEGIN SOLUTION
         for mb_index, partition in schedule:
-            print("batches: ", batches)
             cur_batch = batches[mb_index]
             cur_partition = partitions[partition]
             batches[mb_index] = batches[mb_index].to(devices[partition])
-            print("executing task", mb_index, partition, partitions[partition], batches[mb_index].shape, batches[mb_index].device, self.in_queues[partition], self.out_queues[partition], batches[mb_index], id(batches[mb_index]))
             task = Task(lambda: cur_partition(cur_batch))
             self.in_queues[partition].put(task)
 
@@ -110,7 +105,6 @@ class Pipe(nn.Module):
                 print(f"Error in partition {partition}")
                 print(result)
             else:
-                print("task info", mb_index, partition, result[1], id(result[1]), result[1].shape, result[1].device, self.in_queues[partition], self.out_queues[partition])
                 batches[mb_index] = result[1]
         # END SOLUTION
 
