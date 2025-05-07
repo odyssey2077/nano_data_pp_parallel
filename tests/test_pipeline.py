@@ -139,6 +139,8 @@ def test_forward_0(batch_size, split_size):
     model[2].weight.data = torch.ones(4, 5) * 3
     model[0].bias.data = torch.zeros(4)
     model[2].bias.data = torch.zeros(5)
+    model[0].to('cuda:0')
+    model[2].to('cuda:0')
     # update x to be all 1
     x = torch.ones(batch_size, 3).to('cuda:0')
     y0 = model(x).to('cpu')
