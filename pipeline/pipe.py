@@ -110,7 +110,7 @@ class Pipe(nn.Module):
                 print(f"Error in partition {partition}")
                 print(result)
             else:
-                print("task info", mb_index, partition, result[0], result[1].shape, result[1].shape, result[1].device, self.in_queues[partition], self.out_queues[partition])
+                print("task info", mb_index, partition, result[1], result[1].shape, result[1].device, self.in_queues[partition], self.out_queues[partition])
                 batches[mb_index] = result[1]
         # END SOLUTION
 
