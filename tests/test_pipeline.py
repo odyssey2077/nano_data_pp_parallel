@@ -128,14 +128,19 @@ def test_split_module_1():
 @pytest.mark.parametrize("batch_size", [16])
 @pytest.mark.parametrize("split_size", [8])
 def test_forward_0(batch_size, split_size):
+    # update first layer to be all 2, second layer to be all 3
     model = nn.Sequential(
         nn.Linear(3, 4).to('cuda:0'),
         WithDevice(nn.Sigmoid(), 'cuda:0'),
         nn.Linear(4, 5).to('cuda:0'),
         WithDevice(nn.Sigmoid(), 'cuda:0'),
     )
-    
-    x = torch.randn(batch_size, 3).to('cuda:0')
+    model[0].weight.data = torch.ones(3, 4) * 2
+    model[2].weight.data = torch.ones(4, 5) * 3
+    model[0].bias.data = torch.zeros(4)
+    model[2].bias.data = torch.zeros(5)
+    # update x to be all 1
+    x = torch.ones(batch_size, 3).to('cuda:0')
     y0 = model(x).to('cpu')
 
     # move the last two layer to another device
