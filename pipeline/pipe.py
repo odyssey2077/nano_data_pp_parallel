@@ -97,7 +97,7 @@ class Pipe(nn.Module):
         # BEGIN SOLUTION
         for mb_index, partition in schedule:
             batches[mb_index] = batches[mb_index].to(devices[partition])
-            print("executing task", mb_index, partition, partitions[partition], batches[mb_index].shape, batches[mb_index].device, self.in_queues[partition], self.out_queues[partition], batches[mb_index])
+            print("executing task", mb_index, partition, partitions[partition], batches[mb_index].shape, batches[mb_index].device, self.in_queues[partition], self.out_queues[partition], batches[mb_index], id(batches[mb_index]))
             task = Task(lambda: partitions[partition](batches[mb_index]))
             self.in_queues[partition].put(task)
             if partition == 0:
@@ -110,7 +110,7 @@ class Pipe(nn.Module):
                 print(f"Error in partition {partition}")
                 print(result)
             else:
-                print("task info", mb_index, partition, result[1], result[1].shape, result[1].device, self.in_queues[partition], self.out_queues[partition])
+                print("task info", mb_index, partition, result[1], id(result[1]), result[1].shape, result[1].device, self.in_queues[partition], self.out_queues[partition])
                 batches[mb_index] = result[1]
         # END SOLUTION
 
