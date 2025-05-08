@@ -51,7 +51,7 @@ def run_pp(
     if model_parallel_mode == 'model_parallel':
         model.parallelize()
     elif model_parallel_mode == 'pipeline_parallel':
-        # model.parallelize()
+        model.parallelize()
         model._prepare_pipeline_parallel(split_size=split_size)
     else:
         model = model.to(first_device) # single device

@@ -46,10 +46,7 @@ class GPT2ModelCustom(GPT2Model):
         for k, v in self.device_map.items():
             for block in v:
                 cuda_device = "cuda:" + str(k)
-                print("k, v, block, cuda_device: ", k, v, block, cuda_device)
                 self.h[block] = self.h[block].to(cuda_device)
-                print("h[block].device: , block:, h[block]: ", self.h[block].device, block, self.h[block])
-        print("device map: ", self.device_map)
         # ln_f to last
         self.ln_f = self.ln_f.to(self.last_device)
 
