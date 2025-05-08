@@ -1,9 +1,30 @@
-toy implementation for data parallel and pipeline parallel, based on skeleton code from llmsys_s24_hw4 https://llmsystem.github.io/llmsystem2025springhw/assignment_4/. Here are the results plus some notes on the implementation.
-Data parallel is easy since we can directly leverage the allreduce operator provided by torch.distributed. We adopt multiprocessing since we don't share any memory between the workers. On the contrary, pipeline parallel is implemented using multithreading since we need to move data from one worker to another. It's worth mentioning that I can allreduce for every parameter in the model, so if there's no network optimization within the torch.distributed, the implementation isn't efficient.
+# Parallel Training Implementation
 
-implementing pipeline parallel is a bit more challenging. One notorious bug which took me hours of debugging is passing the proper function to the Task object. Originally cursor suggests using lambda, but it's not memory safe. It reminds of how Rust handles closures and makes me appreciate Rust's design more. In the end I used functools.partial which can fix the parameters passed to the function. Also you should run test python -m pytest -l -v -k "a4_2_2" multiple times since the result has variance.
+A toy implementation for data parallel and pipeline parallel training, based on skeleton code from [llmsys_s24_hw4](https://llmsystem.github.io/llmsystem2025springhw/assignment_4/).
 
-Below are the log outputs for each experiment, plus the graph. I run my experiments on 2 RTX 4090D, rented from autodl.
+## Overview
+
+This project implements and compares two parallelism strategies:
+
+- **Data Parallel**: Distributes batches across multiple GPUs
+- **Pipeline Parallel**: Splits model layers across multiple GPUs
+
+## Implementation Notes
+
+### Data Parallel
+Data parallel is straightforward as we can directly leverage the `allreduce` operator provided by `torch.distributed`. We use multiprocessing since we don't share any memory between workers. It's worth noting that our implementation performs `allreduce` for every parameter in the model, which may not be efficient if there's no network optimization within `torch.distributed`.
+
+### Pipeline Parallel
+Implementing pipeline parallel is more challenging. One notable bug that took hours of debugging was related to passing the proper function to the Task object. Initially, using lambda functions was suggested, but this approach isn't memory safe. This experience highlighted the benefits of Rust's closure design. The solution was to use `functools.partial` to properly fix the parameters passed to functions.
+
+**Note**: Run tests multiple times with `python -m pytest -l -v -k "a4_2_2"` as results have variance.
+
+## Experimental Results
+
+Experiments were run on 2 RTX 4090D GPUs rented from AutoDL.
+
+### Data Parallel (1 GPU)
+
 python project/run_data_parallel.py --world_size 1 --batch_size 64 --n_epochs 5
 Rank 0 training time: avg:20.642004537582398, std:0.3267517407662595,         tokens_per_second: avg: 217800.29586771486, std:3162.662176843728
 
@@ -16,3 +37,4 @@ Training time: avg:36.46264934539795, std:0.009329080581665039,         tokens_p
 
 python project/run_pipeline.py --model_parallel_mode='model_parallel'
 Training time: avg:21.262330532073975, std:0.3602488040924072,         tokens_per_second: avg: 30108.824369474085, std:510.13542261368275
+
