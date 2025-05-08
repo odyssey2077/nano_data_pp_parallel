@@ -44,6 +44,8 @@ class GPT2ModelParallel(GPT2ModelCustom):
         for i in range(len(self.h)):
             modified_layer_list.append(self.h[i])
             modified_layer_list.append(ExtractFirstItem().to(next(self.h[i].parameters()).device))
+        for i in range(len(modified_layer_list)):
+            print("modified_layer_list[i]: ", modified_layer_list[i], modified_layer_list[i].device)
         pipe = Pipe(nn.Sequential(*modified_layer_list), split_size)
         self.h_pp = pipe
 
