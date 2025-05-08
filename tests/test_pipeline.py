@@ -123,10 +123,8 @@ def test_split_module_1():
     assert next(partitions[1].parameters()).device == devices[1]
 
 @pytest.mark.a4_2_2
-# @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
-# @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
-@pytest.mark.parametrize("batch_size", [64])
-@pytest.mark.parametrize("split_size", [16])
+@pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+@pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
 def test_forward_0(batch_size, split_size):
     model = nn.Sequential(
         nn.Linear(3, 4).to('cuda:0'),
