@@ -53,6 +53,7 @@ class Pipe(nn.Module):
 
         self.split_size = int(split_size)
         self.partitions, self.devices = _split_module(module)
+        print("self.partitions: ", self.partitions)
         (self.in_queues, self.out_queues) = create_workers(self.devices)
 
     # ASSIGNMENT 4.2
