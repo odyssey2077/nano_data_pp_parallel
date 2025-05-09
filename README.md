@@ -1,4 +1,4 @@
-# Parallel Training Implementation
+# Pipeline / Data Parallel Training Implementation
 
 A toy implementation for data parallel and pipeline parallel training, based on skeleton code from [llmsys_s24_hw4](https://llmsystem.github.io/llmsystem2025springhw/assignment_4/).
 
@@ -16,6 +16,7 @@ Data parallel is straightforward as we can directly leverage the `allreduce` ope
 
 ### Pipeline Parallel
 Implementing pipeline parallel is more challenging. One notable bug that took hours of debugging was related to passing the proper function to the Task object. Initially, using lambda functions was suggested, but this approach isn't memory safe. This experience highlighted the benefits of Rust's closure design. The solution was to use `functools.partial` to properly fix the parameters passed to functions.
+note that seems we are only required to implement the forward pass, and the backward pass is the same as the naive model parallel.
 
 **Note**: Run tests multiple times with `python -m pytest -l -v -k "a4_2_2"` as results have variance.
 
@@ -46,3 +47,4 @@ python project/run_pipeline.py --model_parallel_mode='model_parallel'
 
 Training time: avg:21.262330532073975, std:0.3602488040924072,         tokens_per_second: avg: 30108.824369474085, std:510.13542261368275
 
+the pipeline implementation is slower than naive model parallel, which is weird and not expected. One possible reason is the model training is memory bound instead of compute bound, and pipeline parallel add more communication overhead.
