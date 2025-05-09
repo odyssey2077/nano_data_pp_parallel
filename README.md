@@ -48,3 +48,15 @@ python project/run_pipeline.py --model_parallel_mode='model_parallel'
 Training time: avg:21.262330532073975, std:0.3602488040924072,         tokens_per_second: avg: 30108.824369474085, std:510.13542261368275
 
 the pipeline implementation is slower than naive model parallel, which is weird and not expected. One possible reason is the model training is memory bound instead of compute bound, and pipeline parallel add more communication overhead.
+
+
+on a RTX 3090, here's the result:
+python project/run_pipeline.py --model_parallel_mode='pipeline_parallel'
+
+Training time: avg:35.75693726539612, std:0.08654451370239258,         tokens_per_second: avg: 17898.729537996907, std:43.321295452664344
+
+python project/run_pipeline.py --model_parallel_mode='model_parallel'
+
+Training time: avg:35.71547174453735, std:0.10436367988586426,         tokens_per_second: avg: 17919.557924919733, std:52.36248929733301
+
+you can see on a slower GPU, the result get closer.
